@@ -90,14 +90,16 @@ class ProgressDialog {
   void dismiss() {
     if (_isShowing) {
       try {
-        _isShowing = false;
         if (Navigator.of(_dismissingContext).canPop()) {
           Navigator.of(_dismissingContext).pop();
           if (_showLogs) debugPrint('ProgressDialog dismissed');
         } else {
           if (_showLogs) debugPrint('Cant pop ProgressDialog');
         }
-      } catch (_) {}
+        _isShowing = false;
+      } catch (e) {
+        if (_showLogs) debugPrint('Failed to dismiss. Error: $e');
+      }
     } else {
       if (_showLogs) debugPrint('ProgressDialog already dismissed');
     }
@@ -106,11 +108,12 @@ class ProgressDialog {
   Future<bool> hide() {
     if (_isShowing) {
       try {
-        _isShowing = false;
         Navigator.of(_dismissingContext).pop(true);
         if (_showLogs) debugPrint('ProgressDialog dismissed');
+        _isShowing = false;
         return Future.value(true);
-      } catch (_) {
+      } catch (e) {
+        if (_showLogs) debugPrint('Failed to hide. Error: $e');
         return Future.value(false);
       }
     } else {
